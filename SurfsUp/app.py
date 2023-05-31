@@ -47,16 +47,19 @@ all()
 @app.route("/")
 def home():
     return (
-        """Return all the available routes"""
-
-        f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/tobs<br/>"
+        # Return all the available routes
+        """Available routes: <br/>"""
+        """<br/>"""
+        "/api/v1.0/precipitation <br/>"
+        "/api/v1.0/stations <br/>"
+        "/api/v1.0/tobs <br/>"
+        "/api/v1.0/&lt;start&gt; <br/>"
+        "/api/v1.0/&lt;start&gt;/&lt;end&gt; <br/>"
     )
 
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    """Return the precipitation data as json"""
+    # Return the precipitation data as json
 
     most_recent_date = session.query(func.max(measurement.date)).scalar()
     most_recent_date = dt.datetime.strptime(most_recent_date, "%Y-%m-%d")
@@ -70,7 +73,7 @@ def precipitation():
 
 @app.route("/api/v1.0/stations")
 def stations():
-    """Return the stations data as json"""
+    # Return the stations data as json
     
     stations = session.query(station.station).all()
     stations_str = [str(s[0]) for s in stations]
@@ -79,7 +82,7 @@ def stations():
 
 @app.route("/api/v1.0/tobs")
 def tobs():
-    """Return the temperature data as json"""
+    # Return the temperature data as json
 
     station_temp = session.query(func.min(measurement.tobs), func.max(measurement.tobs), func.avg(measurement.tobs)).\
     filter(measurement.station == most_active_stations[0][0]).\
@@ -91,7 +94,7 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 def start(start):
-    """Return the temperature data for a specified start date as json"""
+    # Return the temperature data for a specified start date as json
 
     result = session.query(func.min(measurement.tobs), func.max(measurement.tobs), func.avg(measurement.tobs)).\
     filter(measurement.station == most_active_stations[0][0],\
@@ -104,7 +107,7 @@ def start(start):
 
 @app.route("/api/v1.0/<start>/<end>")
 def start_end(start, end):
-    """Return the temperature data for a specified start and end date as json"""
+    # Return the temperature data for a specified start and end date as json
 
     result = session.query(func.min(measurement.tobs), func.max(measurement.tobs), func.avg(measurement.tobs)).\
     filter(measurement.station == most_active_stations[0][0],\
