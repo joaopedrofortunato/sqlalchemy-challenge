@@ -40,6 +40,8 @@ group_by(measurement.station).\
 order_by(func.count(measurement.station).desc()).\
 all()
 
+session.close()
+
 #################################################
 # Flask Routes
 #################################################
@@ -65,9 +67,13 @@ def precipitation():
     most_recent_date = dt.datetime.strptime(most_recent_date, "%Y-%m-%d")
     one_year_ago = most_recent_date - dt.timedelta(days=365)
 
+    session.close()
+
     precipitation = session.query(measurement.date, measurement.prcp).\
     filter(measurement.date >= one_year_ago).\
     order_by(measurement.date).all()
+
+    session.close()
 
     return jsonify(dict(precipitation))
 
@@ -78,6 +84,8 @@ def stations():
     stations = session.query(station.station).all()
     stations_str = [str(s[0]) for s in stations]
 
+    session.close()
+
     return jsonify(stations_str)
 
 @app.route("/api/v1.0/tobs")
@@ -87,6 +95,8 @@ def tobs():
     station_temp = session.query(func.min(measurement.tobs), func.max(measurement.tobs), func.avg(measurement.tobs)).\
     filter(measurement.station == most_active_stations[0][0]).\
     all()
+
+    session.close()
 
     results = list(np.ravel(station_temp))
 
@@ -101,6 +111,8 @@ def start(start):
            measurement.date >= start).\
     all()
 
+    session.close()
+
     results = list(np.ravel(result))
 
     return jsonify(results)
@@ -113,6 +125,8 @@ def start_end(start, end):
     filter(measurement.station == most_active_stations[0][0],\
            measurement.date >= start, measurement.date <= end).\
     all()
+
+    session.close()
 
     results = list(np.ravel(result))
 
